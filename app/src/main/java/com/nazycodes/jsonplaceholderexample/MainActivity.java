@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -25,6 +27,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private ProgressBar progressBar;
     private ContactsRecyclerAdapter contactsRecyclerAdapter;
     private List<Contact> contactDataList = new ArrayList<>();
 
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recyclerView);
+        progressBar = findViewById(R.id.progress_circular);
 
         AndroidNetworking.initialize(getApplicationContext());
     }
@@ -41,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        progressBar.setVisibility(View.VISIBLE);
+
         AndroidNetworking.get("https://jsonplaceholder.typicode.com/users")
                 .setTag("test")
                 .setPriority(Priority.LOW)
@@ -51,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                         // do anything with response
                         Log.d("Success", "contactsList size : " + contacts.size());
                         contactDataList = contacts;
+                        progressBar.setVisibility(View.INVISIBLE);
                         loadUI();
                     }
                     @Override
