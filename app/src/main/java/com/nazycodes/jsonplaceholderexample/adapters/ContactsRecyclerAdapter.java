@@ -1,9 +1,11 @@
 package com.nazycodes.jsonplaceholderexample.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,9 +17,11 @@ import java.util.List;
 
 public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecyclerAdapter.MyViewHolder> {
     List<Contact> contacts;
+    Context context;
 
-    public ContactsRecyclerAdapter(List<Contact> contacts) {
+    public ContactsRecyclerAdapter(List<Contact> contacts, Context context) {
         this.contacts = contacts;
+        this.context = context;
     }
 
     @NonNull
@@ -25,16 +29,24 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.item_list, viewGroup, false);
+
         return new MyViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder viewHolder, int position) {
-        Contact data= contacts.get(position);
-        viewHolder.name.setText(data.getName());
-        viewHolder.email.setText(data.getEmail());
-        viewHolder.phone.setText(data.getPhone());
-        viewHolder.website.setText(data.getWebsite());
+    public void onBindViewHolder(@NonNull MyViewHolder viewHolder, final int position) {
+        final Contact contact = contacts.get(position);
+        viewHolder.name.setText(contact.getName());
+        viewHolder.email.setText(contact.getEmail());
+        viewHolder.phone.setText(contact.getPhone());
+        viewHolder.website.setText(contact.getWebsite());
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Email: " + contact.getEmail(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

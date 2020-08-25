@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -17,6 +18,7 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.ParsedRequestListener;
 import com.nazycodes.jsonplaceholderexample.adapters.ContactsRecyclerAdapter;
 import com.nazycodes.jsonplaceholderexample.models.Contact;
+import com.nazycodes.jsonplaceholderexample.utils.NetworkStatusChecker;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private ContactsRecyclerAdapter contactsRecyclerAdapter;
-    private List<Contact> contactDataList = new ArrayList<>();
+    private List<Contact> contactDataList;
+    private NetworkStatusChecker networkStatusChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +42,19 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progress_circular);
 
+        contactDataList = new ArrayList<>();
         AndroidNetworking.initialize(getApplicationContext());
+        networkStatusChecker = new NetworkStatusChecker();
+
+        if(networkStatusChecker.isNetworkAvailable(this)){
+            Toast.makeText(this, "There is Internet Connection", Toast.LENGTH_SHORT).show();
+            getContactData();
+        } else {
+            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void getContactData() {
         progressBar.setVisibility(View.VISIBLE);
 
         AndroidNetworking.get("https://jsonplaceholder.typicode.com/users")
@@ -98,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadUI(){
-        contactsRecyclerAdapter = new ContactsRecyclerAdapter(contactDataList);
+        contactsRecyclerAdapter = new ContactsRecyclerAdapter(contactDataList,this);
         RecyclerView.LayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
