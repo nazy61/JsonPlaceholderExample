@@ -2,6 +2,7 @@ package com.nazycodes.jsonplaceholderexample;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private List<Contact> contactDataList;
     private NetworkStatusChecker networkStatusChecker;
 
+    private final String api = "https://jsonplaceholder.typicode.com/users";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     protected void getContactData() {
         progressBar.setVisibility(View.VISIBLE);
 
-        AndroidNetworking.get("https://jsonplaceholder.typicode.com/users")
+        AndroidNetworking.get(api)
                 .setTag("test")
                 .setPriority(Priority.LOW)
                 .build()
@@ -108,9 +111,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadUI(){
         contactsRecyclerAdapter = new ContactsRecyclerAdapter(contactDataList,this);
-        RecyclerView.LayoutManager manager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager manager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL));
         recyclerView.setAdapter(contactsRecyclerAdapter);
     }
 }
